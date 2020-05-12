@@ -1,0 +1,13 @@
+{
+  "name": "corona-skill",
+  "description": "",
+  "version": "0.1.0",
+  "dependencies": {
+    "serverless-dynamodb-local": "^0.2.39",
+    "serverless-python-requirements": "^5.1.0"
+  },
+  "devDependencies": {
+    "serverless-alexa-skills": "^0.1.0",
+    "serverless-offline": "^6.1.4"
+  }
+}

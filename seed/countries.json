@@ -1,0 +1,80 @@
+[
+  {
+    "country": "China",
+    "cases": 81054,
+    "deaths": 3261,
+    "continent": "Asia"
+  },
+  {
+    "country": "Italy",
+    "cases": 53578,
+    "deaths": 4825,
+    "continent": "Europe"
+  },
+  {
+    "country": "United States",
+    "cases": 26863,
+    "deaths": 348,
+    "continent": "North America"
+  },
+  {
+    "country": "Spain",
+    "cases": 25496,
+    "deaths": 1381,
+    "continent": "Europe"
+  },
+  {
+    "country": "Germany",
+    "cases": 22364,
+    "deaths": 84,
+    "continent": "Europe"
+  },
+  {
+    "country": "Iran",
+    "cases": 20610,
+    "deaths": 1556,
+    "continent": "Asia"
+  },
+  {
+    "country": "France",
+    "cases": 14459,
+    "deaths": 562,
+    "continent": "Europe"
+  },
+  {
+    "country": "South Korea",
+    "cases": 8897,
+    "deaths": 104,
+    "continent": "Asia"
+  },
+  {
+    "country": "Switzerland",
+    "cases": 6863,
+    "deaths": 80,
+    "continent": "Europe"
+  },
+  {
+    "country": "United Kingdom",
+    "cases": 5018,
+    "deaths": 233,
+    "continent": "Europe"
+  },
+  {
+    "country": "Netherlands",
+    "cases": 3631,
+    "deaths": 136,
+    "continent": "Europe"
+  },
+  {
+    "country": "Austria",
+    "cases": 2992,
+    "deaths": 8,
+    "continent": "Europe"
+  },
+  {
+    "country": "Brazil",
+    "cases": 1209,
+    "deaths": 18,
+    "continent": "South America"
+  }
+]

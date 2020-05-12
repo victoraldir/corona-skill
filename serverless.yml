@@ -1,0 +1,144 @@
+service: corona-skill
+
+provider:
+  name: aws
+  runtime: python3.8
+  environment:
+    ALEXA_SKILL_ID: ${env:ALEXA_SKILL_ID}
+    AMAZON_VENDOR_ID: ${env:AMAZON_VENDOR_ID}
+    AMAZON_CLIENT_ID: ${env:AMAZON_CLIENT_ID}
+    AMAZON_CLIENT_SECRET: ${env:AMAZON_CLIENT_SECRET}
+    GLOBAL_STATS_TABLE: ${self:custom.globalStatsTable}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:Query"
+        - "dynamodb:PutItem"
+        - "dynamodb:UpdateItem"
+        - "dynamodb:BatchWriteItem"
+        - "dynamodb:GetItem"
+      Resource: "*"
+
+custom:
+  defaultStage: dev
+  currentStage: ${opt:stage, self:custom.defaultStage}
+  globalStatsTable: GlobalStats-${self:custom.currentStage}
+  dynamodb:
+    stages:
+      - dev
+    start:
+      seed: false
+      migrate: true
+      port: 8000
+      inMemory: true
+      heapInitial: 200m
+      heapMax: 1g
+    seed:
+      domain:
+        sources:
+          - table: ${self:custom.globalStatsTable}
+            sources: [./seed/countries.json]
+  alexa:
+    vendorId: ${self:provider.environment.AMAZON_VENDOR_ID}
+    clientId: ${self:provider.environment.AMAZON_CLIENT_ID}
+    clientSecret: ${self:provider.environment.AMAZON_CLIENT_SECRET}
+    skills:
+      - id: ${self:provider.environment.ALEXA_SKILL_ID}
+        manifest:
+          publishingInformation:
+            locales:
+              pt-BR:
+                name: corona-stats
+          apis:
+            custom:
+              endpoint:
+                uri: arn:aws:lambda:us-east-1:918100303122:function:corona-skill-dev-status
+          manifestVersion: '1.0'
+        models:
+          pt-BR:
+            interactionModel:
+              languageModel:
+                invocationName: infecções covid
+                intents:
+                  - name: CountryStatusIntent
+                    slots:
+                      - name: Country
+                        type: AMAZON.Country
+                    samples:
+                      - '{Country}'
+                      - 'e na {Country}'
+                      - 'e no {Country}'
+                      - 'e nas {Country}'
+                      - 'e nos {Country}'
+                      - 'qual é a situacão no {Country}'
+                      - 'qual é a situacão nos {Country}'
+                      - 'qual é a situacão na {Country}'
+                      - 'qual é a situacão nas {Country}'
+                      - 'qual a situacão no {Country}'
+                      - 'qual a situacão nos {Country}'
+                      - 'qual a situacão na {Country}'
+                      - 'qual a situacão nas {Country}'
+                      - 'qual a situacão do {Country}'
+                      - 'qual a situacão da {Country}'
+                      - 'qual a situacão das {Country}'
+                      - 'qual é a situacão do {Country}'
+                      - 'qual é a situacão dos {Country}'
+                      - 'qual é a situacão da {Country}'
+                      - 'qual é a situacão das {Country}'
+                      - 'como está a situacão na {Country}'
+                      - 'como está a situacão no {Country}'
+                      - 'como está a situacão nas {Country}'
+                      - 'como está a situacão nos {Country}'
+                      - 'quantos casos no {Country}'
+                      - 'quantos casos nos {Country}'
+                      - 'quantos casos na {Country}'
+                      - 'quantos casos nas {Country}'
+                  - name: AMAZON.StopIntent
+                  - name: AMAZON.HelpIntent
+                  - name: AMAZON.CancelIntent
+                  - name: AMAZON.NavigateHomeIntent
+
+functions:
+  status:
+    handler: skill/status_country.handler
+    package: {}
+    events:
+      - alexaSkill: ${self:provider.environment.ALEXA_SKILL_ID}
+  update_dataset:
+    handler: jobs/update_dataset.fetch_and_update
+    events:
+      - http:
+          path: update-stats
+          method: post
+      - schedule:
+          name: ''
+          description: 'Routine to update database'
+          rate: rate(10 minutes)
+          enabled: true
+
+resources:
+  Resources:
+    GlobalStatsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.globalStatsTable}
+        AttributeDefinitions:
+          - AttributeName: country
+            AttributeType: S
+        KeySchema:
+          - AttributeName: country
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 3
+          WriteCapacityUnits: 3
+
+
+plugins:
+  - serverless-alexa-skills
+  - serverless-python-requirements
+  - serverless-dynamodb-local
+  - serverless-offline
+
+package:
+  exclude:
+    - a/** # virtualenv
