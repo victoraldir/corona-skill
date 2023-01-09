@@ -8,6 +8,6 @@
   },
   "devDependencies": {
     "serverless-alexa-skills": "^0.1.0",
-    "serverless-offline": "^6.1.4"
+    "serverless-offline": "^12.0.4"
   }
 }
